@@ -5,11 +5,11 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative overflow-hidden py-24 md:py-12 lg:py-16 px-8 sm:px-16 lg:px-20"
+      className="relative overflow-hidden py-6 md:py-12 lg:py-16 px-8 sm:px-16 lg:px-20"
     >
       {/* Glow effect (visible on md and above) */}
       <div
-        className="hidden md:block absolute -top-30 -left-40 w-[30rem] h-[30rem] rounded-full opacity-40 z-0"
+        className="hidden md:block absolute -top-30 -left-40 w-[30rem] h-[30rem] rounded-full opacity-35 z-0"
         style={{
           background: "radial-gradient(circle, #96FA8A, #30F917, #1B696600)",
           filter: "blur(120px)",
@@ -22,13 +22,13 @@ const Hero = () => {
         alt="hero"
         height={1000}
         width={1000}
-        className="w-full md:max-w-2/3 absolute top-10 left-0 z-10"
+        className="w-full md:max-w-2/3 absolute top-0 md:top-10 left-0 z-10"
       />
 
       <div className="relative z-20 flex flex-1 flex-col md:flex-row md:justify-between md:items-center">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="text-white">
-            <div className="text-center md:text-left text-3xl sm:text-4xl lg:text-4xl font-bold flex flex-col gap-3 md:gap-4 lg:gap-6 font-[family-name:var(--font-lemon-milk)] ">
+            <div className="text-center md:text-left text-3xl sm:text-4xl lg:text-4xl font-bold flex flex-col gap-3 md:gap-4 lg:gap-6 font-[family-name:var(--font-lemon-milk)] mt-16 md:mt-0">
               <span>LAUNCH</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#1A6F0F] via-[#30F917] to-[#71FF60] hero-glow">
                 AI-POWERED TOKENS
