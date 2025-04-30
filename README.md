@@ -132,7 +132,7 @@ Report concerns to dev.czdamian@gmail.com
 
 ## 📊 Project Status
 
-![Active Development](/landing.png)
+![Active Development](https://github.com/czDamian/hedera-pulse/blob/main/public/landing.png)
 
 ---
 
