@@ -41,40 +41,27 @@ export async function GET(req) {
 
     // Prepare data for AI analysis with raw JSON
     const analysisPrompt = `
-      You are Hedera Pulse, a hedera blockchain token analyzer. Analyze this Hedera token data from the Mirror Node API. Keep your response brief
-      
+      You are Hedera Pulse, a blockchain token analyzer. Provide a brief, narrative analysis of this Hedera token based on the Mirror Node API data. Write in clear paragraphs, avoiding bullet points.
+
       Token Information JSON:
       ${JSON.stringify(tokenInfo, null, 2)}
 
       Token Holders JSON:
       ${JSON.stringify(holdersData, null, 2)}
 
-      Please analyze the raw JSON data and provide:
+      Structure your analysis as a short essay covering:
+      1. Token Overview: Discuss the token's basic properties, creation date, and key configuration.
+      2. Distribution Analysis: Examine holder distribution patterns and concentration.
+      3. Risk Assessment: Evaluate centralization risks and security concerns.
+      4. Overall Health: Provide a health score (0-100) with brief justification.
 
-      1. Token Overview
-         - Extract and analyze key parameters (name, symbol, supplies, creation date, etc.)
-         - Identify token type and properties
-         - Find and analyze admin/treasury accounts
-
-      2. Distribution Analysis
-         - Find the largest holder and calculate their percentage
-         - Analyze the distribution pattern from the balances
-         - Calculate the concentration of top holders
-
-      3. Risk Assessment
-         - Identify potential centralization risks from the data
-         - Check for any suspicious patterns in holder distribution
-         - Analyze token configuration risks
-
-      4. Health Score (0-100)
-         - Calculate based on found parameters
-         - Explain the key factors affecting the score
-
-      Present your findings in a clear, markdown-formatted response.
-      Things to note:
-      1. The treasury account is not owned by any user. It holds the token supply and is used for minting new tokens.
-      2. The admin key is not owned by any user.
-      3. Tokens less than 24 hrs are relatively new and should be bought with caution and low risk
+      Important context:
+      - Treasury accounts hold token supply for minting
+      - Admin keys are system-controlled
+      - Tokens under 24 hours old are considered high-risk
+      - Keep the response short, concise and focused on key insights
+      
+      Format the response in markdown with appropriate headings and paragraphs.
     `;
 
     let aiAnalysis = null;

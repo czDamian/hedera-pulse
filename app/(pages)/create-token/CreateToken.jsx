@@ -22,39 +22,51 @@ const CreateToken = () => {
     e.preventDefault();
     setStatusMessage("");
     setIsLoading(true);
+
     if (!window.ethereum) {
-      alert("MetaMask not installed");
+      setStatusMessage("MetaMask not installed");
+      setIsLoading(false);
       return;
     }
+
     // collect fee for creating token
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
+
       if (!address) {
         setStatusMessage("Please connect your wallet to MetaMask");
+        setIsLoading(false);
         return;
       }
+
       setAccount(address);
-      console.log("Account:", address);
       const network = await provider.getNetwork();
-      console.log("Wrong network:", Number(network.chainId));
+
       if (Number(network.chainId) !== 296) {
         setStatusMessage("Please switch to Hedera Testnet in MetaMask");
-        console.log("Wrong network:", Number(network.chainId));
+        setIsLoading(false);
         return;
       }
-      const tx = await signer.sendTransaction({
-        to: feeAddress,
-        value: ethers.parseEther(feeAmount),
-      });
 
-      console.log("Transaction hash:", tx.hash);
-      await tx.wait();
-      setStatusMessage("Transaction fee paid, creating token...");
-
-      console.log("fee paid, proceeding to create token");
       try {
+        const tx = await signer.sendTransaction({
+          to: feeAddress,
+          value: ethers.parseEther(feeAmount),
+        });
+
+        await tx.wait();
+        setStatusMessage("Transaction fee paid, creating token...");
+
+        if (!account) {
+          setStatusMessage(
+            "Please connect your wallet and fill all required fields"
+          );
+          setIsLoading(false);
+          return;
+        }
+
         const response = await fetch("/api/create-token", {
           method: "POST",
           headers: {
@@ -69,25 +81,33 @@ const CreateToken = () => {
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to create token");
+        }
+
         if (data?.success) {
           setStatusMessage("Token created successfully!");
           setTokenId(data.tokenId);
           setHashScanUrl(data.hashScanUrl);
           setTokenBalance(data.tokenBalance?.low);
-          // setTokenEvmAddress(data.tokenEvmAddress);
           await addHederaTokenToMetaMask(data.tokenEvmAddress, tokenSymbol, 0);
         }
-        console.log(data);
       } catch (error) {
         console.error("Error creating token:", error);
-        setStatusMessage("Error creating token. Please try again.");
+        setStatusMessage(
+          error.message || "Error creating token. Please try again."
+        );
+        setIsLoading(false);
+        return;
       }
     } catch (error) {
-      console.error("Error Paying token creation fee:", error);
-      console.error("Error:", error.message);
-      setStatusMessage("Error Paying Token Creation fee.");
+      console.error("Error paying token creation fee:", error);
+      setStatusMessage(error.message || "Error paying token creation fee");
       setIsLoading(false);
       return;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -102,12 +122,11 @@ const CreateToken = () => {
         const wasAdded = await window.ethereum.request({
           method: "wallet_watchAsset",
           params: {
-            type: "ERC20", // Hedera tokens are ERC-20 compatible via EVM
+            type: "ERC20",
             options: {
               address: tokenAddress, // The EVM-compatible token address
-              symbol: tokenSymbol, // Token symbol (e.g. "MYT")
-              decimals: tokenDecimals, // Number of decimals
-              image: "https://yourdomain.com/logo.png", // Optional token icon
+              symbol: tokenSymbol, //
+              decimals: tokenDecimals,
             },
           },
         });
@@ -126,97 +145,207 @@ const CreateToken = () => {
   }
 
   return (
-    <div className="text-white px-8 md:px-12 max-w-3xl mx-auto">
+    <section id="create-token" className="min-h-screen pb-10">
       <Connect />
+      <div className="max-w-3xl text-white px-8 md:px-12 mx-auto relative">
+        {/* Decorative Elements */}
+        <div className="absolute -top-10 -left-20 w-64 h-64 bg-green-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-40 -right-20 w-64 h-64 bg-green-500/10 rounded-full blur-3xl" />
 
-      <form onSubmit={handleSubmit} className="space-y-6 my-12">
-        <div>
-          <label className="block mb-1 text-sm font-medium">Token Name</label>
-          <input
-            type="text"
-            value={tokenName}
-            onChange={(e) => setTokenName(e.target.value)}
-            className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700"
-            required
-          />
+        {/* Title Section */}
+        <div className="text-center mb-12 pt-8">
+          <h1 className="text-3xl md:text-4xl font-[family-name:var(--font-lemon-milk)] mb-4">
+            Create Your Token
+          </h1>
+          <p className="text-green-400/80 text-sm md:text-base">
+            Launch your Hedera token in minutes with AI-powered smart contract
+            generation
+          </p>
         </div>
 
-        <div>
-          <label className="block mb-1 text-sm font-medium">Token Symbol</label>
-          <input
-            type="text"
-            value={tokenSymbol}
-            onChange={(e) => setTokenSymbol(e.target.value)}
-            className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700"
-            required
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium">
-            Initial Supply
-          </label>
-          <select
-            value={initialSupply}
-            onChange={(e) => setInitialSupply(Number(e.target.value))}
-            className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700"
-            required
-          >
-            <option value={1000000}>1 Million</option>
-            <option value={10000000}>10 Million</option>
-            <option value={100000000}>100 Million</option>
-            <option value={1000000000}>1 Billion</option>
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded w-full"
-          disabled={isLoading}
+        {/* Form Section */}
+        <form
+          onSubmit={handleSubmit}
+          className="backdrop-blur-sm bg-black/30 rounded-xl border border-green-900/50 p-6 md:p-8 space-y-8 relative"
         >
-          Create Token
-        </button>
-        {statusMessage && (
-          <div className="text-sm text-white animate-pulse">
-            {" "}
-            {statusMessage}{" "}
+          <div className="space-y-6">
+            {/* Token Name Input */}
+            <div className="group">
+              <label className="block mb-2 text-sm font-medium text-green-400">
+                Token Name
+                <span className="text-xs text-gray-400 ml-2">
+                  (e.g., "MyAwesomeToken")
+                </span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={tokenName}
+                  onChange={(e) => setTokenName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
+                  required
+                  placeholder="Enter token name"
+                />
+                <div className="absolute inset-0 border border-green-500/0 rounded-lg group-hover:border-green-500/20 pointer-events-none transition-all" />
+              </div>
+            </div>
+
+            {/* Token Symbol Input */}
+            <div className="group">
+              <label className="block mb-2 text-sm font-medium text-green-400">
+                Token Symbol
+                <span className="text-xs text-gray-400 ml-2">
+                  (e.g., "MTK")
+                </span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={tokenSymbol}
+                  onChange={(e) => setTokenSymbol(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none transition-all uppercase"
+                  required
+                  placeholder="Enter token symbol"
+                  maxLength={5}
+                />
+                <div className="absolute inset-0 border border-green-500/0 rounded-lg group-hover:border-green-500/20 pointer-events-none transition-all" />
+              </div>
+            </div>
+
+            {/* Initial Supply Select */}
+            <div className="group">
+              <label className="block mb-2 text-sm font-medium text-green-400">
+                Initial Supply
+                <span className="text-xs text-gray-400 ml-2">
+                  (Total tokens to mint)
+                </span>
+              </label>
+              <div className="relative">
+                <select
+                  value={initialSupply}
+                  onChange={(e) => setInitialSupply(Number(e.target.value))}
+                  className="w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:outline-none transition-all appearance-none hover:bg-gray-800/70"
+                  required
+                  style={{ colorScheme: "dark" }}
+                >
+                  <option
+                    value={1000000}
+                    className="bg-gray-900 hover:bg-green-800"
+                  >
+                    1 Million Tokens
+                  </option>
+                  <option
+                    value={10000000}
+                    className="bg-gray-900 hover:bg-green-800"
+                  >
+                    10 Million Tokens
+                  </option>
+                  <option
+                    value={100000000}
+                    className="bg-gray-900 hover:bg-green-800"
+                  >
+                    100 Million Tokens
+                  </option>
+                  <option
+                    value={1000000000}
+                    className="bg-gray-900 hover:bg-green-800"
+                  >
+                    1 Billion Tokens
+                  </option>
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Creating Token...
+              </span>
+            ) : (
+              "Create Token"
+            )}
+          </button>
+
+          {/* Status Message */}
+          {statusMessage && (
+            <div className="text-sm text-center font-medium text-green-400 animate-pulse mt-4">
+              {statusMessage}
+            </div>
+          )}
+        </form>
+
+        {/* Token Details Section */}
+        {tokenId && (
+          <div className="mt-8 p-6 bg-gray-800/50 rounded-lg border border-green-900">
+            <h2 className="text-2xl font-bold mb-6 font-[family-name:var(--font-lemon-milk)]">
+              Token Created Successfully! 🎉
+            </h2>
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-400">Token ID:</span>
+                <span className="font-mono bg-gray-900 p-2 rounded">
+                  {tokenId}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-400">Your Allocations:</span>
+                <span className="font-mono bg-gray-900 p-2 rounded">
+                  {tokenBalance.toLocaleString()} {tokenSymbol}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="text-gray-400">View on HashScan:</span>
+                <a
+                  href={hashScanUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-400 hover:text-green-300 underline break-all"
+                >
+                  {hashScanUrl}
+                </a>
+              </div>
+            </div>
           </div>
         )}
-      </form>
-
-      {/* Token Details Section */}
-      {tokenId && (
-        <div className="mt-8 p-6 bg-gray-800/50 rounded-lg border border-green-900">
-          <h2 className="text-2xl font-bold mb-6 font-[family-name:var(--font-lemon-milk)]">
-            Token Created Successfully! 🎉
-          </h2>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <span className="text-gray-400">Token ID:</span>
-              <span className="font-mono bg-gray-900 p-2 rounded">
-                {tokenId}
-              </span>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-gray-400">Your Allocations:</span>
-              <span className="font-mono bg-gray-900 p-2 rounded">
-                {tokenBalance.toLocaleString()} {tokenSymbol}
-              </span>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="text-gray-400">View on HashScan:</span>
-              <a
-                href={hashScanUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-green-400 hover:text-green-300 underline break-all"
-              >
-                {hashScanUrl}
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 };
 

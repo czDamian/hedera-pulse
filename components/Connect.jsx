@@ -87,7 +87,7 @@ const Connect = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-[#1A5913] to-black">
+    <nav className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-[#14450E] to-[#14450E]">
       {/* Logo */}
       <div className="flex-shrink-0">
         <Link href="/">
@@ -102,7 +102,13 @@ const Connect = () => {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 font-[family-name:var(--font-caviar-dreams)]">
+        <Link
+          href="/create-token"
+          className="text-white hover:text-green-400 transition-colors"
+        >
+          Create Token
+        </Link>
         <Link
           href="/analyze-token"
           className="text-white hover:text-green-400 transition-colors"

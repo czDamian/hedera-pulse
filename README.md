@@ -4,6 +4,18 @@
 
 Hedera Pulse is an AI-powered platform that revolutionizes token creation and management on the Hedera network. Leveraging artificial intelligence, it provides real-time analytics and simplified token operations.
 
+![Project Image ](https://github.com/czDamian/hedera-pulse/blob/main/public/landing.png)
+
+## ❗ Notice
+
+To test this project using the live link [Hedera Pulse](https://hedera-pulse.vercel.app/), ensure the following:
+
+1. Connect to **Metamask Wallet** on a desktop device.
+2. Switch to the **Hedera Testnet**.
+3. Obtain some Hedera Testnet tokens from the [Hedera Portal](https://portal.hedera.com/).
+
+Once set up, you can proceed to create tokens. Note that analyzing tokens does not incur any gas fees!
+
 ## 🎯 Problem Statement
 
 - Complex and time-consuming token creation process
@@ -74,6 +86,8 @@ npm start
 
 ### Token Creation
 
+![Token Creation](https://github.com/czDamian/hedera-pulse/blob/main/public/create.png)
+
 ```http
 POST /api/create-token
 Content-Type: application/json
@@ -87,6 +101,8 @@ Content-Type: application/json
 
 ### Token Analysis
 
+![Token Analysis](https://github.com/czDamian/hedera-pulse/blob/main/public/analysis.png)
+
 ```http
 GET /api/analyze-token?tokenId=0.0.xxx
 ```
@@ -99,7 +115,7 @@ GET /api/my-tokens?address=xxx
 
 ## 🏗️ Tech Stack
 
-- Next.js 13
+- Next.js 15
 - Tailwind CSS
 - Hedera SDK
 - Google Gemini AI

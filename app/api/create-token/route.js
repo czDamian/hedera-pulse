@@ -62,7 +62,7 @@ export async function POST(req) {
     //Get the account ID from the receipt
     const treasuryAccountId = newAccountReceipt.accountId;
 
-    console.log("The new account ID is " + treasuryAccountId);
+    console.log("The treasury account ID is " + treasuryAccountId);
 
     // Create the token
     const tokenTx = await new TokenCreateTransaction()
@@ -72,8 +72,8 @@ export async function POST(req) {
       .setDecimals(0)
       .setInitialSupply(initialSupply)
       .setTreasuryAccountId(treasuryAccountId)
-      .setSupplyKey(supplyKey) // Random supplyKey for now
-      //   .setAdminKey(PrivateKey.generate()) // Random adminKey for now
+      .setSupplyKey(supplyKey)
+      .setTokenMemo(`Token created by ${walletAddress}`)
       .setMaxTransactionFee(new Hbar(5))
       .freezeWith(client);
     const signTokenTx = await tokenTx.sign(treasuryKey);
