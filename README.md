@@ -95,6 +95,7 @@ Content-Type: application/json
 {
   "tokenName": "string",
   "tokenSymbol": "string",
+  "walletAddress": "string",
   "initialSupply": "number"
 }
 ```
@@ -103,11 +104,15 @@ Content-Type: application/json
 
 ![Token Analysis](https://github.com/czDamian/hedera-pulse/blob/main/public/analysis.png)
 
+Note that only Hedera Formatted Addresses are supported for now (0.0.xxx)
+
 ```http
 GET /api/analyze-token?tokenId=0.0.xxx
 ```
 
 ### Token List
+
+Both Hedera and EVM addresses are supported
 
 ```http
 GET /api/my-tokens?address=xxx
@@ -145,10 +150,6 @@ Report concerns to dev.czdamian@gmail.com
 
 - Damian Olebuezie - Frontend and AI Developer
 - Ani Stephanie - UI Designer
-
-## 📊 Project Status
-
-![Active Development](https://github.com/czDamian/hedera-pulse/blob/main/public/landing.png)
 
 ---
 
