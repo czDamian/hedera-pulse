@@ -37,6 +37,58 @@ Once set up, you can proceed to create tokens. Note that analyzing tokens does n
 - **Distribution Tracking**: Visual holder analytics
 - **Wallet Integration**: Seamless account management
 
+## 🤖 AI Agent Implementation
+
+### HCS-10 Integration
+
+Hedera Pulse leverages the HCS-10 standard for AI agent communication and token creation:
+
+```javascript
+// AI Agent Initialization
+const aiClient = new HCS10Client({
+  network: "testnet",
+  operatorId: process.env.AI_AGENT_ACCOUNT_ID,
+  operatorPrivateKey: process.env.AI_AGENT_PRIVATE_KEY,
+  prettyPrint: true,
+});
+```
+
+### Message Flow
+
+1. **Agent Creation**: During setup, an AI agent is created using the HCS-10 standard
+2. **Topic Management**: The agent uses dedicated topics for:
+   - Inbound requests (`AI_AGENT_INBOUND_TOPIC_ID`)
+   - Token creation messages
+   - Agent state management
+
+### Token Creation Process
+
+1. User request is sent to agent via HCS
+2. Agent processes request using standardized message format:
+
+```javascript
+{
+  op: "create_token",
+  operator_id: "0.0.xxx",
+  tokenData: {
+    name: "TokenName",
+    symbol: "TKN",
+    initialSupply: 1000000,
+    creator: "walletAddress"
+  }
+}
+```
+
+3. Agent creates token using Hedera Token Service
+4. Response is sent back through HCS
+
+### Benefits
+
+- **Decentralized Communication**: All agent interactions are recorded on HCS
+- **Standardized Messages**: Following HCS-10 ensures compatibility
+- **Automated Processing**: AI agent handles token creation autonomously
+- **Verifiable Actions**: All operations are traceable on Hedera network
+
 ## 🛠️ Installation
 
 ```bash
@@ -48,6 +100,27 @@ cd hedera-pulse
 
 # Install dependencies
 npm install
+```
+
+Run the script to create the AI Agent and add the Agent Id and PrivateKey in the env file
+
+```bash
+node createAgent.js
+```
+
+if you created the AI agent successfully, you will see the details in the console similar to this
+
+```bash
+{
+  accountId: '0.0.xxxxx',
+  privateKey: '30xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  operatorId: '0.0.xxxxx',
+  inboundTopicId: '0.0.xxxxxxxx',
+  outboundTopicId: '0.0.xxxxxx',
+  profileTopicId: '0.0.xxxxxxx',
+  pfpTopicId: '0.0.xxxxxxx'
+ }
+
 ```
 
 ## ⚙️ Environment Setup
@@ -63,6 +136,8 @@ NEXT_PUBLIC_EVM_ADDRESS= " "
 OPERATOR_ACCOUNT_ID= " "
 OPERATOR_ACCOUNT_ID_2= " "
 NEXT_PUBLIC_FEE_AMOUNT=2
+AI_AGENT_ACCOUNT_ID = ""
+AI_AGENT_PRIVATE_KEY = ""
 
 # Gemini
 GEMINI_API_KEY = "  "

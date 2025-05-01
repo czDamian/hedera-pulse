@@ -7,7 +7,6 @@ import Connect from "@/components/Connect";
 const CreateToken = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
-  const [account, setAccount] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [initialSupply, setInitialSupply] = useState(1000000);
@@ -29,7 +28,6 @@ const CreateToken = () => {
       return;
     }
 
-    // collect fee for creating token
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
@@ -40,16 +38,14 @@ const CreateToken = () => {
         setIsLoading(false);
         return;
       }
-
-      setAccount(address);
       const network = await provider.getNetwork();
-
       if (Number(network.chainId) !== 296) {
         setStatusMessage("Please switch to Hedera Testnet in MetaMask");
         setIsLoading(false);
         return;
       }
 
+      // Process fee payment
       try {
         const tx = await signer.sendTransaction({
           to: feeAddress,
@@ -59,21 +55,13 @@ const CreateToken = () => {
         await tx.wait();
         setStatusMessage("Transaction fee paid, creating token...");
 
-        if (!account) {
-          setStatusMessage(
-            "Please connect your wallet and fill all required fields"
-          );
-          setIsLoading(false);
-          return;
-        }
-
         const response = await fetch("/api/create-token", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            walletAddress: account,
+            walletAddress: address,
             tokenName,
             tokenSymbol,
             initialSupply,
@@ -91,10 +79,13 @@ const CreateToken = () => {
           setTokenId(data.tokenId);
           setHashScanUrl(data.hashScanUrl);
           setTokenBalance(data.tokenBalance?.low);
+          setTokenName("");
+          setTokenSymbol("");
+          setInitialSupply(1000000);
           await addHederaTokenToMetaMask(data.tokenEvmAddress, tokenSymbol, 0);
         }
       } catch (error) {
-        console.error("Error creating token:", error);
+        console.error("Error in token creation process:", error);
         setStatusMessage(
           error.message || "Error creating token. Please try again."
         );
@@ -102,8 +93,8 @@ const CreateToken = () => {
         return;
       }
     } catch (error) {
-      console.error("Error paying token creation fee:", error);
-      setStatusMessage(error.message || "Error paying token creation fee");
+      console.error("Error in wallet connection:", error);
+      setStatusMessage(error.message || "Error connecting wallet");
       setIsLoading(false);
       return;
     } finally {
@@ -158,8 +149,8 @@ const CreateToken = () => {
             Create Your Token
           </h1>
           <p className="text-green-400/80 text-sm md:text-base">
-            Launch your Hedera token in minutes with AI-powered smart contract
-            generation
+            Launch your Hedera token in seconds with our AI-powered smart token
+            creation
           </p>
         </div>
 
@@ -327,7 +318,7 @@ const CreateToken = () => {
               <div className="flex flex-col gap-2">
                 <span className="text-gray-400">Your Allocations:</span>
                 <span className="font-mono bg-gray-900 p-2 rounded">
-                  {tokenBalance.toLocaleString()} {tokenSymbol}
+                  {tokenBalance?.toLocaleString()} {tokenSymbol}
                 </span>
               </div>
               <div className="flex flex-col gap-2">
