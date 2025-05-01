@@ -51,9 +51,9 @@ const MyTokens = () => {
   };
 
   return (
-    <section id="my-tokens" className="">
+    <section id="my-tokens" className="min-h-screen ">
       <Connect />
-      <div className="text-white px-8 md:px-12 max-w-3xl mx-auto ">
+      <div className="text-white px-4 sm:px-8 md:px-12 max-w-7xl mx-auto">
         <div className="my-12">
           <h1 className="text-2xl font-bold mb-6 font-[family-name:var(--font-lemon-milk)]">
             My Tokens
@@ -71,47 +71,45 @@ const MyTokens = () => {
               </p>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {tokens.map((token) => (
                 <div
                   key={token.tokenId}
-                  className="bg-gray-800/50 rounded-lg border border-green-900 p-6"
+                  className="bg-gray-800/50 rounded-lg border border-green-900 p-4 hover:border-green-500 transition-colors max-w-sm"
                 >
                   {/* Token Name Header */}
-                  <div className="mb-4 pb-4 border-b border-green-900">
-                    <h3 className="text-xl font-bold text-green-400">
-                      <span className="uppercase">
+                  <div className="mb-2 pb-2 border-b border-green-900">
+                    <h3 className="text-lg font-bold text-green-400 flex items-center justify-between">
+                      <span className="uppercase truncate">
                         {token.name || "Unnamed Token"}
                       </span>
-                      <span> ({token.symbol || ""})</span>
+                      <span className="text-xs ml-2 flex-shrink-0">({token.symbol || ""})</span>
                     </h3>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <span className="text-gray-400">Token ID</span>
-                      <p className="font-mono bg-gray-900 p-2 rounded">
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="space-y-1">
+                      <span className="text-gray-400 text-xs">Token ID</span>
+                      <p className="font-mono bg-gray-900 p-1.5 rounded text-xs overflow-hidden text-ellipsis">
                         {token.tokenId}
                       </p>
                     </div>
-                    <div className="space-y-2">
-                      <span className="text-gray-400">Balance</span>
-                      <p className="font-mono bg-gray-900 p-2 rounded">
+                    <div className="space-y-1">
+                      <span className="text-gray-400 text-xs">Balance</span>
+                      <p className="font-mono bg-gray-900 p-1.5 rounded text-sm">
                         {token.balance.toLocaleString()} {token.symbol}
                       </p>
                     </div>
-                    <div className="space-y-2">
-                      <span className="text-gray-400">Decimals</span>
-                      <p className="font-mono bg-gray-900 p-2 rounded">
+                    <div className="space-y-1">
+                      <span className="text-gray-400 text-xs">Decimals</span>
+                      <p className="font-mono bg-gray-900 p-1.5 rounded text-sm">
                         {token.decimals}
                       </p>
                     </div>
-                    <div className="space-y-2">
-                      <span className="text-gray-400">Created At</span>
-                      <p className="font-mono bg-gray-900 p-2 rounded">
-                        {new Date(
-                          Number(token.createdAt) * 1000
-                        ).toLocaleDateString()}
+                    <div className="space-y-1">
+                      <span className="text-gray-400 text-xs">Created At</span>
+                      <p className="font-mono bg-gray-900 p-1.5 rounded text-sm">
+                        {new Date(Number(token.createdAt) * 1000).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
