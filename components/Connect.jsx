@@ -5,12 +5,15 @@ import { ethers } from "ethers";
 import Image from "next/image";
 import Link from "next/link";
 import { FaWallet } from "react-icons/fa";
+import { HiMenu, HiX } from "react-icons/hi";
 
 const Connect = () => {
   const [account, setAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     // Check if wallet is already connected on page load
@@ -29,8 +32,11 @@ const Connect = () => {
 
     checkConnection();
 
-    // Close dropdown when clicking outside
+    // Close dropdown and mobile menu when clicking outside
     const handleClickOutside = (event) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
@@ -87,22 +93,35 @@ const Connect = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-[#14450E] to-[#14450E]">
+    <nav className="flex justify-between items-center px-4 md:px-8 py-4 bg-gradient-to-r from-[#14450E] to-[#14450E]">
       {/* Logo */}
       <div className="flex-shrink-0">
-        <Link href="/">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.png"
             alt="Logo"
             width={100}
             height={100}
-            className="w-auto h-12"
+            className="w-auto h-8 md:h-12"
           />
+          <span className="text-white font-[family-name:var(--font-kg-red-hands)]">Hedera Pulse</span>
         </Link>
       </div>
 
-      {/* Navigation Links */}
-      <div className="flex items-center gap-4 font-[family-name:var(--font-caviar-dreams)]">
+      {/* Mobile Menu Button */}
+      <button
+        className="md:hidden text-white p-2 cursor-pointer"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? (
+          <HiX className="h-6 w-6" />
+        ) : (
+          <HiMenu className="h-6 w-6" />
+        )}
+      </button>
+
+      {/* Navigation Links - Desktop */}
+      <div className="hidden md:flex items-center gap-4 font-[family-name:var(--font-caviar-dreams)]">
         <Link
           href="/create-token"
           className="text-white hover:text-green-400 transition-colors"
@@ -121,6 +140,7 @@ const Connect = () => {
         >
           My Tokens
         </Link>
+        {/* Wallet Connect Button */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={connectWallet}
@@ -148,6 +168,51 @@ const Connect = () => {
           )}
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div
+          ref={mobileMenuRef}
+          className="absolute top-16 left-0 right-0 bg-[#14450E] border-t border-green-900 md:hidden z-50"
+        >
+          <div className="flex flex-col p-4 space-y-4">
+            <Link
+              href="/create-token"
+              className="text-white hover:text-green-400 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Create Token
+            </Link>
+            <Link
+              href="/analyze-token"
+              className="text-white hover:text-green-400 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Analyze Token
+            </Link>
+            <Link
+              href="/my-tokens"
+              className="text-white hover:text-green-400 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              My Tokens
+            </Link>
+            {/* Mobile Wallet Button */}
+            <button
+              onClick={connectWallet}
+              disabled={isLoading}
+              className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 px-4 py-2 rounded-lg text-white transition-all duration-200 disabled:opacity-50"
+            >
+              <FaWallet className="text-white" />
+              {isLoading
+                ? "Connecting..."
+                : account
+                ? `${account.slice(0, 4)}...${account.slice(-4)}`
+                : "Connect Wallet"}
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
