@@ -13,6 +13,7 @@ const CreateToken = () => {
   const [tokenId, setTokenId] = useState("");
   const [hashScanUrl, setHashScanUrl] = useState("");
   const [tokenBalance, setTokenBalance] = useState(0);
+  const [tokenMetadata, setTokenMetadata] = useState(null);
 
   const feeAddress = process.env.NEXT_PUBLIC_EVM_ADDRESS;
   const feeAmount = process.env.NEXT_PUBLIC_FEE_AMOUNT;
@@ -79,10 +80,14 @@ const CreateToken = () => {
           setTokenId(data.tokenId);
           setHashScanUrl(data.hashScanUrl);
           setTokenBalance(data.tokenBalance?.low);
+          setTokenMetadata({
+            address: data.tokenEvmAddress,
+            symbol: tokenSymbol,
+            decimals: 0,
+          });
           setTokenName("");
           setTokenSymbol("");
           setInitialSupply(1000000);
-          await addHederaTokenToMetaMask(data.tokenEvmAddress, tokenSymbol, 0);
         }
       } catch (error) {
         console.error("Error in token creation process:", error);
@@ -332,6 +337,25 @@ const CreateToken = () => {
                   {hashScanUrl}
                 </a>
               </div>
+              {tokenMetadata && (
+                <button
+                  onClick={() =>
+                    addHederaTokenToMetaMask(
+                      tokenMetadata.address,
+                      tokenMetadata.symbol,
+                      tokenMetadata.decimals
+                    )
+                  }
+                  className="mt-4 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600  w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                  <img
+                    src="/metamask.png"
+                    alt="MetaMask"
+                    className="w-5 h-5"
+                  />
+                  Add to MetaMask
+                </button>
+              )}
             </div>
           </div>
         )}
