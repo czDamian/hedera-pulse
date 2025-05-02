@@ -27,16 +27,16 @@ const Stats = () => {
         <div className="flex flex-wrap justify-center gap-4 md:gap-6 lg:gap-8">
           <StatCard
             title="Total Tokens Created"
-            value="100+"
+            value="85+"
             icon={<AiOutlineLink className="text-white" size={30} />}
           />
           <StatCard
             title="AI Tasks Used"
-            value="1000+"
+            value="359+"
             icon={<BiTask className="text-white" size={30} />}
           />
           <StatCard
-            title="Credits"
+            title="Topics Created"
             value="1600+"
             icon={<TiCreditCard className="text-white" size={30} />}
           />
