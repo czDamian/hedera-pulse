@@ -8,7 +8,7 @@ const Navigation = () => {
           Hedera Pulse
         </div>
         <nav className="hidden  sm:flex gap-4 md:gap-6 lg:gap-8">
-          <Link href="/my-tokens"> View Tokens</Link>
+          <Link href="/my-tokens">Tokens</Link>
           <Link href="#about">About</Link>
         </nav>
         <div className="shadow-lg">
