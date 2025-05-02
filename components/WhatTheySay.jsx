@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaPlay } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const people = [
   {
@@ -37,6 +38,67 @@ const people = [
     img: "https://images.pexels.com/photos/4307884/pexels-photo-4307884.jpeg?auto=compress&cs=tinysrgb&w=400",
   },
 ];
+
+const TestimonialCard = ({ person, index }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{
+      duration: 0.5,
+      delay: index * 0.1,
+      ease: "easeOut"
+    }}
+    viewport={{ once: true }}
+    className="px-2"
+  >
+    <motion.div
+      whileHover={{
+        y: -10,
+        transition: { duration: 0.2 }
+      }}
+      className="rounded-xl bg-white shadow-lg relative overflow-hidden"
+    >
+      <motion.img
+        initial={{ scale: 1.2 }}
+        whileInView={{ scale: 1 }}
+        transition={{ duration: 0.5 }}
+        src={person.img}
+        alt={person.name}
+        className="w-full h-40 sm:h-60 object-cover rounded-t-xl"
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="p-4 text-center bg-gradient-to-b from-black to-green-900 text-white rounded-b-xl"
+      >
+        <motion.h3
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          className="font-semibold text-lg"
+        >
+          {person.name}
+        </motion.h3>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+          className="text-xs mt-2 mb-4"
+        >
+          {person.description}
+        </motion.p>
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 360 }}
+          transition={{ duration: 0.3 }}
+          className="inline-block p-2 bg-white text-green-900 rounded-full"
+        >
+          <FaPlay />
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  </motion.div>
+);
 
 export default function WhatTheySay() {
   const settings = {
@@ -73,32 +135,35 @@ export default function WhatTheySay() {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
-      <h1 className="text-white text-2xl my-4 md:my-8 font-[family-name:var(--font-caviar-dreams)]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+      viewport={{ once: true }}
+      className="w-full min-h-screen flex flex-col items-center justify-center py-12"
+    >
+      <motion.h1
+        initial={{ y: -30, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+        className="text-white text-2xl my-4 md:my-8 font-[family-name:var(--font-caviar-dreams)]"
+      >
         What They Are Saying About Us
-      </h1>
-      <div className="max-w-6xl w-full px-4">
+      </motion.h1>
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        viewport={{ once: true }}
+        className="max-w-6xl w-full px-4"
+      >
         <Slider {...settings}>
           {people.map((person, index) => (
-            <div key={index} className="px-2">
-              <div className="rounded-xl bg-white shadow-lg relative">
-                <img
-                  src={person.img}
-                  alt={person.name}
-                  className="w-full h-40 sm:h-60 object-cover rounded-t-xl"
-                />
-                <div className="p-4 text-center bg-gradient-to-b from-black to-green-900 text-white rounded-b-xl">
-                  <h3 className="font-semibold text-lg">{person.name}</h3>
-                  <p className="text-xs mt-2 mb-4">{person.description}</p>
-                  <div className="inline-block p-2 bg-white text-green-900 rounded-full">
-                    <FaPlay />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TestimonialCard key={index} person={person} index={index} />
           ))}
         </Slider>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
