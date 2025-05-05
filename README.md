@@ -108,6 +108,9 @@ Run the script to create the AI Agent and add the Agent Id and PrivateKey in the
 node createAgent.js
 ```
 
+OUR AI AGENT CAN BE FOUND ON MOONSCAPE
+![HederaPulseAI Agent](https://moonscape.tech/openconvai/agents/0.0.5933017)
+
 if you created the AI agent successfully, you will see the details in the console similar to this
 
 ```bash

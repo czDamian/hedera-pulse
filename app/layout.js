@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
-
+import { WalletProvider } from "@/WalletProvider";
 const lemonMilk = localFont({
   src: "./fonts/LEMONMILK.otf",
   variable: "--font-lemon-milk",
@@ -34,7 +34,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${lemonMilk.variable} ${groteskRegular.variable} ${caviarDreams.variable} ${topSecret.variable} ${kgRedHands.variable} antialiased`}
       >
-        {children}
+        <WalletProvider>{children}</WalletProvider>
       </body>
     </html>
   );
